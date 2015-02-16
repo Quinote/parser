@@ -1,0 +1,56 @@
+<head>
+	<title>Regex test</title>
+	
+	<!-- links to JQuery, JQuery UI, other libraries -->
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
+	<link href='http://fonts.googleapis.com/css?family=Lusitana|Noto+Sans|Allerta' rel='stylesheet' type='text/css'>
+	
+	<!-- local scripts -->
+	<script src="parser.js"></script>
+	<script src="quizmaker.js"></script>
+	
+	<script>
+	$(document).ready(function() {
+
+		
+		var sample = "12-28-1903: John von Neumann born\n1-1-1900: turn of the 20th century\n7-28-1914: beginning of WWI\n11-11-1918: end of WWI\n9-1-1939: beginning of WWII\n5-7-1945: end of WWII\n\nJohn von Neumann: important computer scientist\n\nVon Neumann architecture: important idea\n\t- I/O\n\t\t- main memory\n\nComputer: a computy-thing\n\nMemory: where you store data\n\nI/O: input/output\n\nJVN was a cool dude";
+		$("#input").val(sample);
+	
+		// listeners
+		$("#go").click(function() {
+			$("#output").html("");
+			var text = $("#input").val();
+			var lines = text.split("\n");
+				
+			var result = parseInput(lines);	
+			
+			console.log(result);
+			
+			var options = new OptionList();
+			var quiz = makeQuiz(result, options);
+			console.log(quiz);
+			
+		});
+
+	});
+		
+	</script>
+	<style>
+	textarea {
+		width: 400px;
+		height: 200px;
+	}
+	div {
+		font: 14px arial, sans-serif;
+	}
+	</style>
+</head>
+<body>
+	<textarea id="input"></textarea>
+	<br>
+	<button id="go">process</button>
+	<br>
+	<br>
+	<div id="output"></div>

@@ -8,6 +8,7 @@ a Quiz object containing a number of questions.
 
 
 TODO:
+	- Avoid infinite loop based on insufficient input size
 
 */
 
