@@ -10,7 +10,6 @@ of arrays of (possibly nested) objects.
 TODO: 
 	- better dateRegex
 	- create an emptyRegex to identify whitespace
-	- revise tab-testing regex
 	- where is preformatting / API-dependent separation of elements done?
 
 */
