@@ -71,6 +71,10 @@ function makeQuiz(parseResult, optionList) {
 	
 	var identifierPool = parseResult.getIdentifiers();
 	
+	if (identifierPool.length < numberOfQuestions) {
+		console.log("Error: not enough identifiers found to make " + numberOfQuestions + " questions");
+	}
+	
 	for (var i = 0; i<numberOfQuestions; i++) {
 		var newQuestion;
 		
