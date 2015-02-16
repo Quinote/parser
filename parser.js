@@ -203,6 +203,9 @@ function parseRawElement(rawElement) {
 	
 	// split by colon 
 	var components = rawElement.value.split(":");
+	for (i in components) {
+		components[i] = components[i].trim();
+	}
 	
 	if (dateRegex.test(components[0]) ) {
 		newElement = new DateElement(components[0]);
@@ -220,6 +223,9 @@ function parseRawElement(rawElement) {
 	if (components.length === 2 && components[1] != "") {
 		// split definitions by semicolon
 		var elementDefinitions = components[1].split(";");
+		for (i in elementDefinitions) {
+			elementDefinitions[i] = elementDefinitions[i].trim();
+		}
 		
 		// assign definitions of element
 		newElement.definitions = elementDefinitions;
