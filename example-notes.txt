@@ -1,0 +1,14 @@
+cortical: consciousness
+subcortical: below your level of awareness
+fovea: thumbnail-sized spot of best vision
+two types of photoreceptors:
+	cones: color, less precise (larger receptive fields)
+	rods: more sensitive, colorblind
+3 layer filter in the retina: photoreceptors -> bipolar cells -> ganglion cells -> optic nerve
+blind spot: where optic nerve leaves (you can't put photoreceptors there)
+lateral geniculate body/nucleus: part of thalamus that processes signals from retina; has 6 different layers; segregates retinal signals to 2 different pathways
+	magnocellular: layers 1-2
+	parvocellular: layers 3-6
+default mode network: 'mind-wandering'; 'internal mentation'; 'nonsensical narratives of our day'; introspective; activity mostly in the middle of the brain; stimulus-independent thought
+amygdala: salience detector; alarm; pay attention
+insula: 'island'; sentient self/material me; perceiving internal body (intraception); important for emotion integration

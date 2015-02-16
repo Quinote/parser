@@ -97,21 +97,27 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 	
 	// remove and return one key
 	var key;
-	if (identifierPool.length === 0) {
-		console.log("Error: out of keys from which to generate questions");
-		return null;
-	} else {
-		 key = identifierPool.splice(index, 1)[0];
-		 if (key instanceof DateElement) {
-			 key = key.date;
-		 } else if (key instanceof IdentifierElement) {
-			 key = key.identifier;
-		 }
+	while (typeof key === "undefined") {
+		if (identifierPool.length === 0) {
+			console.log("Error: out of keys from which to generate questions");
+			return null;
+		} else {
+			 key = identifierPool.splice(index, 1)[0];
+			 
+			 // continue if element has no definition
+			 if (key.definitions.length === 0) continue;
+			 
+			 if (key instanceof DateElement) {
+				 key = key.date;
+			 } else if (key instanceof IdentifierElement) {
+				 key = key.identifier;
+			 }
+		}
 	}
 	
 	// get element associated with key
 	var parseElement = parseResult.getElementByKey(key);
-	
+	console.log(parseElement, key);
 	// select one correct answer from possible definitions
 	var definitionIndex = Math.floor(Math.random()*parseElement.definitions.length);
 	var correctAnswer = parseElement.definitions[definitionIndex];

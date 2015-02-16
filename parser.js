@@ -61,18 +61,17 @@ function ParseResult(parsedElements, identifiers, dates, definitions, events, ot
 	
 	this.getElementByKey = function (key) {
 		// TODO: function description
-		for (i in this.parsedElements) {
-			var element = this.parsedElements[i];
-			if (element instanceof DateElement) {
-				if (element.date === key) {
-					return element;
-				}
-			} else if (element instanceof IdentifierElement) {
-				if (element.identifier === key) {
-					return element;
-				}
+		for (i in this.identifiers) {
+			if (this.identifiers[i].identifier === key) {
+				return this.identifiers[i];
 			}
 		}
+		for (i in this.dates) {
+			if (this.dates[i].date === key) {
+				return this.dates[i];
+			}
+		}
+
 	}
 }
 
@@ -108,7 +107,7 @@ function DateElement (date) {
 }
 
 //*************************************
-//FUNCTIONS
+// FUNCTIONS
 //*************************************
 
 /////////////////////////
@@ -218,7 +217,7 @@ function parseRawElement(rawElement) {
 	}
 	
 	// test if definition present
-	if (components.length === 2) {
+	if (components.length === 2 && components[1] != "") {
 		// split definitions by semicolon
 		var elementDefinitions = components[1].split(";");
 		
