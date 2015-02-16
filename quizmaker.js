@@ -26,6 +26,8 @@ TODO:
 ////////////////////////
 
 function Quiz(questions) {
+	// currently only contains a list of questions
+	
 	this.questions = questions;
 }
 
@@ -33,7 +35,10 @@ function Quiz(questions) {
 
 function OptionList() {
 	// specifies the settings for quiz generation
+	
+	// limited for testing purposes
 	this.numberOfQuestions = 2;
+	
 	this.questionTypes = {
 		"Multiple Choice": 10, 
 		"Fill-in-the-blank": 0, 
@@ -93,22 +98,19 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 		 } else if (key instanceof IdentifierElement) {
 			 key = key.identifier;
 		 }
-		 console.log(key);
 	}
 	
+	// get element associated with key
 	var parseElement = parseResult.getElementByKey(key);
 	
 	// select one correct answer from possible definitions
-	
 	var definitionIndex = Math.floor(Math.random()*parseElement.definitions.length);
 	var correctAnswer = parseElement.definitions[definitionIndex];
-	
 	
 	// select three incorrect answers from other possible definitions
 	var otherChoices = [];
 	if (parseElement instanceof DateElement) {
 		var eventPool = parseResult.events.slice();
-		console.log(eventPool);
 		// ensure no answer overlap
 		removeAll(eventPool, parseElement.definitions);
 		
@@ -117,16 +119,14 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 				console.log("Insufficient input to produce date question.");
 				return null;
 			}
+			// select random wrong answer
 			var eventIndex = Math.floor(Math.random()*eventPool.length);
 			var event = eventPool.splice(eventIndex, 1)[0];
 			
 			otherChoices.push(event);
-			
-			
 		}
 	} else if (parseElement instanceof IdentifierElement) {
 		var definitionPool = parseResult.definitions.slice();
-		console.log(definitionPool);
 		// ensure no answer overlap
 		removeAll(definitionPool, parseElement.definitions);
 		
@@ -135,7 +135,7 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 				console.log("Insufficient input to produce identifier question.");
 				return null;
 			}
-			
+			// select random wrong answer
 			var definitionIndex = Math.floor(Math.random()*definitionPool.length);
 			var definition = definitionPool.splice(definitionIndex, 1)[0];
 			
@@ -147,6 +147,7 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 }
 
 function removeAll(targetArray, elementsToRemove) {
+	// remove all elements in elementsToRemove from targetArray
 	for (i in elementsToRemove) {
 		var index = $.inArray(elementsToRemove[i], targetArray);
 		while (index > -1) {

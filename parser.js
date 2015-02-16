@@ -10,6 +10,7 @@ of arrays of (possibly nested) objects.
 TODO: 
 	- better dateRegex
 	- create an emptyRegex to identify whitespace
+	- revise tab-testing regex
 	- where is preformatting / API-dependent separation of elements done?
 
 */
@@ -120,19 +121,15 @@ function parseInput(elements) {
 	levels then parse according to parse rules. Returns a ParseResult
 	object containing the results of the final parsing function
 	*/
-	// clear global arrays
-	parsedElements = [];
-	identifiers = [];
-	dates = [];
-	definitions = [];
-	events = [];
-	other = [];
+	
+	// reset state of global variables for new parse
+	resetState();
 	
 	// get list of top-level elements containing their subelements
 	var rawElements = readIndentLevels(elements, 0, 0);
 	
 	for (var i=0; i<rawElements.length; i++) {
-		// ignore empty lines
+		// ignore empty lines; see TODO
 		if (rawElements[i].value.length === 0) continue;
 		
 		// parse indent-organized RawElements
@@ -155,12 +152,13 @@ function readIndentLevels (elements, index, indentationLevel) {
 	
 	while (index < elements.length) {
 		
-		// format of element depends on surrounding API TODO
+		// format of element depends on surrounding API, see TODO
 		var val = elements[index];
 		
 		// get indentation level of current element
 		var currentIndentation = getIndentationLevel(val); 
 		
+		// if indent level is less, then current hierarchy is done
 		if (currentIndentation < indentationLevel) return indentLevelElements;
 		
 		var currentElement = new RawElement(val);
@@ -172,12 +170,16 @@ function readIndentLevels (elements, index, indentationLevel) {
 			var nextIndentation = getIndentationLevel(elements[index]);
 			
 			if (nextIndentation < indentationLevel) {
-				break;
+				// current hierarchy is complete; return 
+				return indentLevelElements;
 			} else if (nextIndentation === indentationLevel) {
+				// non-subordinate element follows
 				continue;
 			} else {
-				currentElement.subelements = 
-					readIndentLevels(elements, index, nextIndentation);
+				// otherwise, current element is a list; make recursive call
+				currentElement.subelements = readIndentLevels(elements, index, nextIndentation);
+				
+				// increase index by size of list (recursive call)
 				index += countSubelements(currentElement);
 			}
 		}
@@ -198,8 +200,10 @@ function parseRawElement(rawElement) {
 	/* recursively turn RawElements into their respective 
 	IdentifierElement or DateElement forms
 	*/
+	
 	var newElement;
 	
+	// split by colon 
 	var components = rawElement.value.split(":");
 	
 	if (dateRegex.test(components[0]) ) {
@@ -214,15 +218,25 @@ function parseRawElement(rawElement) {
 		}
 	}
 	
+	// test if definition present
 	if (components.length === 2) {
-		var definition = components[1];
-		newElement.definitions.push(definition);
+		// split definitions by semicolon
+		var elementDefinitions = components[1].split(";");
+		
+		// assign definitions of element
+		newElement.definitions = elementDefinitions;
+		
 		if (newElement instanceof DateElement) {
-			events.push(definition);
+			for (i in elementDefinitions) {
+				events.push(elementDefinitions[i]);
+			}
 		} else if (newElement instanceof IdentifierElement) {
-			definitions.push(definition);
+			for (i in elementDefinitions) {
+				definitions.push(elementDefinitions[i]);
+			}
 		}
 	} else {
+		// if not, element is free-floating
 		other.push(newElement);
 	}
 	
@@ -238,10 +252,22 @@ function getIndentationLevel(str) {
 	
 	var count = 0;
 	
-	//needs to be adjusted for leading tabs, not all tabs
-	while (/\t/.test(str)) {
+	// test for tabs (\t) at the beginning of the string
+	while (/^\t/.test(str)) {
 		str = str.replace("\t", "");
 		count++;
 	}
 	return count;
+}
+
+function resetState() {
+	// Reset relevant global variables 
+	
+	// clear global arrays
+	parsedElements = [];
+	identifiers = [];
+	dates = [];
+	definitions = [];
+	events = [];
+	other = [];
 }
