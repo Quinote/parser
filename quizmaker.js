@@ -117,7 +117,7 @@ function makeMultipleChoiceQuestion(identifierPool, parseResult) {
 	
 	// get element associated with key
 	var parseElement = parseResult.getElementByKey(key);
-	console.log(parseElement, key);
+
 	// select one correct answer from possible definitions
 	var definitionIndex = Math.floor(Math.random()*parseElement.definitions.length);
 	var correctAnswer = parseElement.definitions[definitionIndex];
