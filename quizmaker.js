@@ -62,6 +62,10 @@ function MultipleChoiceQuestion(identifier, answer, otherChoices) {
 /////////////////////////
 
 function makeQuiz(parseResult, optionList) {
+	if (typeof optionList === "undefined") {
+		optionList = new OptionList();
+	}
+	
 	var generatedQuestions = [];
 	var numberOfQuestions = Math.min(parseResult.parsedElements.length, optionList.numberOfQuestions);
 	
