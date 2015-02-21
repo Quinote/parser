@@ -162,7 +162,6 @@ function parseInput(elements) {
 	}
 	
 	var parseResult = new ParseResult(parsedElements, identifiers, dates, definitions, events, other);
-	console.log(parseResult.identifiers[0]);
 	return parseResult;
 }
 
@@ -239,7 +238,8 @@ function parseRawElement(rawElement) {
 	// test for presence of aliases
 	if (components.length > 1 && aliasRegex.test(components[0])) {
 		// extract aliases
-		aliases = aliasRegex.exec(components[0])[0];
+		var aliasExec = aliasRegex.exec(components[0]);
+		aliases = aliasExec[0];
 		// strip brackets
 		aliases = aliases.substring(1, aliases.length-1);
 		// split apart list by semicolon or comma
@@ -248,8 +248,8 @@ function parseRawElement(rawElement) {
 			// trim whitespace
 			aliases[i] = aliases[i].trim();
 		}
-		// set components[0] (the identifier) to itself less brackets
-		components[0] = components[0].substring(0, components[0].indexOf("["));
+		// set components[0] (the identifier) to itself less alias construction
+		components[0] = components[0].substring(0, aliasExec.index);
 		// trim any new whitespace
 		components[0] = components[0].trim();
 	}
