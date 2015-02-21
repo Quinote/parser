@@ -8,6 +8,7 @@ of newline-separated strings, and returns a ParseResult object, which consists
 of arrays of (possibly nested) objects. 
 
 TODO: 
+	- ordered lists
 	- better dateRegex
 	- create an emptyRegex to identify whitespace
 	- where is preformatting / API-dependent separation of elements done?
@@ -19,9 +20,10 @@ TODO:
 //**************************************
 
 var dateRegex = /[0-9]+-[0-9]+-[0-9]+/;
+var aliasRegex = /\[.*\]/;
+var aliasSeparatorRegex = /;|,/;
 var ideaRegex = /([^:])+/;
-var equalityRegex = /:|-/;
-var separatorRegex = /;/;
+var equalityRegex = /:/; // currently unused; may be expanded
 
 // these need to be global because of recursive scoping issues
 // alternative would be recursive construction of a ParseResult
@@ -93,8 +95,17 @@ function IdentifierElement (identifier) {
 	
 	*/
 	this.identifier = identifier;
+	this.aliases = []; // a list of other names by which this element may be known
 	this.definitions = []; // to be set if applicable
 	this.subelements = []; // to be appended to if applicable
+	
+	// not sure if these methods will be necessary; TODO
+	this.setIdentfier = function(identifier) {
+		this.identifier = identifier;
+	}
+	this.getIdentifier = function(identifier) {
+		return this.identifier;
+	}
 }
 
 function DateElement (date) {
@@ -102,8 +113,22 @@ function DateElement (date) {
 		least a date and possibly a definition and/or list.
 	*/
 	this.date = date;
+	this.aliases = []; // a list of other names by which this element may be known
 	this.definitions = [];
 	this.subelements = [];
+	
+	
+	// not sure if these methods will be necessary; TODO
+	this.setIdentifier = function(identifier) {
+		if (!dateRegex.test(identifier)) {
+			console.log("WARNING: setting DateElement identifier " + this.identifier + " to non-date " + identifier);
+		}
+		this.date = identifier;
+	}
+	this.getIdentifier = function(identifier) {
+		return this.date;
+	}
+	
 }
 
 //*************************************
@@ -136,7 +161,9 @@ function parseInput(elements) {
 		parsedElements.push(parsedElement);
 	}
 	
-	return new ParseResult(parsedElements, identifiers, dates, definitions, events, other);
+	var parseResult = new ParseResult(parsedElements, identifiers, dates, definitions, events, other);
+	console.log(parseResult.identifiers[0]);
+	return parseResult;
 }
 
 /////////////////////////
@@ -200,23 +227,51 @@ function parseRawElement(rawElement) {
 	*/
 	
 	var newElement;
+	var aliases;
 	
 	// split by colon 
 	var components = rawElement.value.split(":");
 	for (i in components) {
+		// strip leading/following whitespace
 		components[i] = components[i].trim();
 	}
 	
+	// test for presence of aliases
+	if (components.length > 1 && aliasRegex.test(components[0])) {
+		// extract aliases
+		aliases = aliasRegex.exec(components[0])[0];
+		// strip brackets
+		aliases = aliases.substring(1, aliases.length-1);
+		// split apart list by semicolon or comma
+		aliases = aliases.split(aliasSeparatorRegex);
+		for (i in aliases) {
+			// trim whitespace
+			aliases[i] = aliases[i].trim();
+		}
+		// set components[0] (the identifier) to itself less brackets
+		components[0] = components[0].substring(0, components[0].indexOf("["));
+		// trim any new whitespace
+		components[0] = components[0].trim();
+	}
+	
 	if (dateRegex.test(components[0]) ) {
+		// make new element
 		newElement = new DateElement(components[0]);
+
 		if (components.length > 1) {
 			dates.push(newElement);
 		}
 	} else if (ideaRegex.test(components[0]) ) {
 		newElement = new IdentifierElement(components[0]);
+		
 		if (components.length > 1) {
 			identifiers.push(newElement);
 		}
+	}
+	
+	// set aliases if applicable
+	if (typeof newElement !== "undefined" && typeof aliases !== "undefined") {
+		newElement.aliases = aliases;
 	}
 	
 	// test if definition present
@@ -241,6 +296,9 @@ function parseRawElement(rawElement) {
 		}
 	} else {
 		// if not, element is free-floating
+		if (typeof newElement === "undefined") {
+			newElement = new IdentifierElement(components[0]);
+		}
 		other.push(newElement);
 	}
 	
