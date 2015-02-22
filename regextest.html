@@ -40,6 +40,9 @@
 			var options = new OptionList();
 			var quiz = makeQuiz(result, options);
 			console.log(quiz);
+			for (i in quiz.questions) {
+				console.log(quiz.questions[i].getText());
+			}
 			
 		});
 

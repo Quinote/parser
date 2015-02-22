@@ -111,6 +111,9 @@ function IdentifierElement (identifier) {
 function DateElement (date) {
 	/* Like an IdentifierElement, a DateElement contains at
 		least a date and possibly a definition and/or list.
+	
+		As a class of identifier, date fields are a special 
+		subset of normal identifiers.
 	*/
 	this.date = date;
 	this.aliases = []; // a list of other names by which this element may be known
