@@ -27,12 +27,14 @@ var equalityRegex = /:/; // currently unused; may be expanded
 
 // these need to be global because of recursive scoping issues
 // alternative would be recursive construction of a ParseResult
-var parsedElements = [];
-var identifiers = [];
-var dates = [];
-var definitions = [];
-var events = [];
-var other = [];
+var parser_parsedElements = [];
+var parser_identifiers = [];
+var parser_dates = [];
+var parser_definitions = [];
+var parser_events = [];
+var parser_other = [];
+
+
 
 //**************************************
 // PROTOTYPE OBJECTS
@@ -134,6 +136,15 @@ function DateElement (date) {
 	
 }
 
+function OtherElement (value) {
+	/* An element which could not be parsed into a recognized
+		category.
+	
+		CURRENTLY UNUSED
+	*/
+	this.value = value;
+}
+
 //*************************************
 // FUNCTIONS
 //*************************************
@@ -160,11 +171,11 @@ function parseInput(elements) {
 		
 		// parse indent-organized RawElements
 		var parsedElement = parseRawElement(rawElements[i]);
-
-		parsedElements.push(parsedElement);
+		
+		parser_parsedElements.push(parsedElement);
 	}
 	
-	var parseResult = new ParseResult(parsedElements, identifiers, dates, definitions, events, other);
+	var parseResult = new ParseResult(parser_parsedElements, parser_identifiers, parser_dates, parser_definitions, parser_events, parser_other);
 	return parseResult;
 }
 
@@ -262,13 +273,13 @@ function parseRawElement(rawElement) {
 		newElement = new DateElement(components[0]);
 
 		if (components.length > 1) {
-			dates.push(newElement);
+			parser_dates.push(newElement);
 		}
 	} else if (ideaRegex.test(components[0]) ) {
 		newElement = new IdentifierElement(components[0]);
 		
 		if (components.length > 1) {
-			identifiers.push(newElement);
+			parser_identifiers.push(newElement);
 		}
 	}
 	
@@ -290,11 +301,11 @@ function parseRawElement(rawElement) {
 		
 		if (newElement instanceof DateElement) {
 			for (i in elementDefinitions) {
-				events.push(elementDefinitions[i]);
+				parser_events.push(elementDefinitions[i]);
 			}
 		} else if (newElement instanceof IdentifierElement) {
 			for (i in elementDefinitions) {
-				definitions.push(elementDefinitions[i]);
+				parser_definitions.push(elementDefinitions[i]);
 			}
 		}
 	} else {
@@ -302,10 +313,11 @@ function parseRawElement(rawElement) {
 		if (typeof newElement === "undefined") {
 			newElement = new IdentifierElement(components[0]);
 		}
-		other.push(newElement);
+		parser_other.push(newElement);
 	}
 	
 	for (var i=0; i<rawElement.subelements.length; i++) {
+		// recurse on subelements
 		newElement.subelements.push(parseRawElement(rawElement.subelements[i]));
 	}
 
@@ -329,10 +341,10 @@ function resetState() {
 	// Reset relevant global variables 
 	
 	// clear global arrays
-	parsedElements = [];
-	identifiers = [];
-	dates = [];
-	definitions = [];
-	events = [];
-	other = [];
+	parser_parsedElements = [];
+	parser_identifiers = [];
+	parser_dates = [];
+	parser_definitions = [];
+	parser_events = [];
+	parser_other = [];
 }
